@@ -21,3 +21,29 @@ Hệ thống quản lý kho hàng triển khai bằng Docker Compose.
 
 ## Giám sát và bảo mật
 Sẽ bổ sung theo từng giai đoạn.
+## Nginx Reverse Proxy
+
+Hệ thống triển khai Nginx làm Reverse Proxy cho ứng dụng PHP.
+
+### Kiến trúc
+
+Browser → Nginx:8080 → PHP Apache:80 → MySQL:3306
+
+### Truy cập
+
+- Website: http://localhost:8080
+- phpMyAdmin: http://localhost:8082
+
+### Bảo mật Nginx
+
+- X-Frame-Options: SAMEORIGIN
+- X-Content-Type-Options: nosniff
+- Referrer-Policy: strict-origin-when-cross-origin
+- Permissions-Policy: Vô hiệu hóa camera, microphone và geolocation.
+
+### Kiểm thử
+
+docker compose config --quiet
+docker compose up -d
+docker compose ps
+curl -I http://localhost:8080
