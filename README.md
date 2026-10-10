@@ -106,3 +106,44 @@ Hệ thống sử dụng Promtail để thu thập Docker container logs,
 
 **Truy vấn 3: Thống kê số dòng log trong 5 phút**
 sum(count_over_time({job="docker"}[5m]))
+## Hardening – Bảo mật hệ thống
+
+Hệ thống áp dụng 4 biện pháp Hardening:
+
+### 1. Nginx Security Headers
+
+Cấu hình các HTTP Security Headers:
+- X-Frame-Options: SAMEORIGIN
+- X-Content-Type-Options: nosniff
+- Referrer-Policy: strict-origin-when-cross-origin
+- Permissions-Policy
+
+Kiểm tra: `curl -I http://localhost:8080`
+
+### 2. Network Isolation
+
+Hệ thống sử dụng hai Docker network:
+- `app-network`: Kết nối website, MySQL, Nginx và các dịch vụ liên quan.
+- `monitoring`: Kết nối Prometheus, Grafana, Loki và các thành phần giám sát.
+
+Các Exporter cần truy cập cả hai mạng được cấu hình kết nối tương ứng.
+
+### 3. Non-root Container
+
+Blackbox Exporter chạy bằng UID/GID `65534:65534`, thay vì tài khoản root.
+
+Kiểm tra: `docker compose exec blackbox-exporter id`
+
+### 4. Least Privilege
+
+Blackbox Exporter được áp dụng:
+- `cap_drop: ALL`
+- `no-new-privileges:true`
+
+Kiểm tra cấu hình bảo mật bằng `docker inspect`.
+
+### Kết quả kiểm thử
+
+- Blackbox Exporter hoạt động với tài khoản non-root.
+- Docker xác nhận đã loại bỏ capabilities và bật no-new-privileges.
+- Prometheus trả về `probe_success = 1`, chứng minh website vẫn có thể được kiểm tra qua HTTP sau khi áp dụng Hardening.

@@ -136,10 +136,20 @@ services:
   blackbox-exporter:
     image: prom/blackbox-exporter:v0.27.0
     restart: unless-stopped
+    user: "65534:65534"
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
     volumes:
       - ./monitoring/blackbox.yml:/etc/blackbox_exporter/config.yml:ro
+
     command:
       - '--config.file=/etc/blackbox_exporter/config.yml'
+
     networks:
       - monitoring
       - app-network
