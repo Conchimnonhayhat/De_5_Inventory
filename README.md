@@ -77,3 +77,32 @@ docker compose up -d
 docker compose ps
 
 Truy cập Prometheus /targets để kiểm tra trạng thái UP.
+## Centralized Logging - Loki + Promtail
+
+Hệ thống sử dụng Promtail để thu thập Docker container logs,
+đẩy về Loki và truy vấn tập trung qua Grafana Explore.
+
+### Thành phần
+
+- Loki: Lưu trữ log tập trung
+- Promtail: Thu thập Docker logs
+- Grafana: Truy vấn và trực quan hóa log
+- LogQL: Lọc, thống kê và phân tích log
+
+### Truy cập
+
+- Loki API: http://localhost:3100
+- Grafana: http://localhost:3000
+
+### Các truy vấn LogQL
+
+**Truy vấn 1: Xem toàn bộ Docker logs**
+
+```logql
+{job="docker"}
+**Truy vấn 2: Lọc các log chứa "error"**
+
+{job="docker"} |= "error"
+
+**Truy vấn 3: Thống kê số dòng log trong 5 phút**
+sum(count_over_time({job="docker"}[5m]))

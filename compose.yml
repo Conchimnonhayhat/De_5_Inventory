@@ -87,7 +87,30 @@ services:
       - prometheus
     networks:
       - monitoring
+  loki:
+    image: grafana/loki:3.5.0
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./monitoring/loki.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    ports:
+      - "127.0.0.1:3100:3100"
+    networks:
+      - monitoring
 
+  promtail:
+    image: grafana/promtail:3.5.0
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./monitoring/promtail.yml:/etc/promtail/config.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - promtail_positions:/tmp
+    depends_on:
+      - loki
+    networks:
+      - monitoring
   node-exporter:
     image: prom/node-exporter:v1.9.1
     restart: unless-stopped
@@ -140,7 +163,8 @@ volumes:
   mysql_data:
   prometheus_data:
   grafana_data:
-
+  loki_data:
+  promtail_positions:
 networks:
   app-network:
     driver: bridge
