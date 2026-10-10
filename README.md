@@ -47,3 +47,33 @@ docker compose config --quiet
 docker compose up -d
 docker compose ps
 curl -I http://localhost:8080
+## Monitoring - Prometheus + Grafana
+
+Hệ thống sử dụng Prometheus và Grafana để giám sát
+máy chủ Ubuntu, các container Docker và MySQL.
+
+### Thành phần
+- Prometheus: Thu thập metrics
+- Grafana: Hiển thị dashboard
+- Node Exporter: CPU, RAM, Disk, Network Ubuntu
+- cAdvisor: CPU, RAM, Network container
+- MySQL Exporter: Theo dõi MySQL
+- Blackbox Exporter: Kiểm tra HTTP website
+
+### Truy cập
+- Prometheus: http://localhost:9090
+- Grafana: http://localhost:3000
+- Inventory: http://localhost:8080
+
+### Dashboard
+- Node Exporter Full: ID 1860
+- cAdvisor: ID 14282
+- MySQL Overview: ID 7362
+
+Các file JSON được lưu tại monitoring/dashboards/.
+
+### Kiểm thử
+docker compose up -d
+docker compose ps
+
+Truy cập Prometheus /targets để kiểm tra trạng thái UP.
